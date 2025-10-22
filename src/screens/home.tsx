@@ -1,36 +1,57 @@
 import * as React from "react";
-import { Text, View, StyleSheet } from "react-native";
-import Logo from "../components/Logo";
+import { View, StyleSheet, Dimensions } from "react-native";
+import { QueryClient, QueryClientProvider } from "react-query";
+import YouTubeHeader from "../components/YouTubeHeader";
+import Sidebar from "../components/Sidebar";
+import FilterChips from "../components/FilterChips";
+import VideoGrid from "../components/VideoGrid";
+
+const queryClient = new QueryClient();
+
+const Home = () => {
+  const [screenWidth, setScreenWidth] = React.useState(Dimensions.get('window').width);
+  const showSidebar = screenWidth > 768;
+
+  React.useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setScreenWidth(window.width);
+    });
+    return () => subscription?.remove();
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <View style={styles.container}>
+        <YouTubeHeader />
+        <View style={styles.mainContent}>
+          {showSidebar && <Sidebar />}
+          <View style={styles.contentArea}>
+            <FilterChips />
+            <VideoGrid />
+          </View>
+        </View>
+      </View>
+    </QueryClientProvider>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    backgroundColor: "#ecf0f1",
-    padding: 8
+    backgroundColor: "#fff",
+    overflow: 'hidden',
   },
-  title: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center"
+  mainContent: {
+    flex: 1,
+    flexDirection: 'row',
+    minHeight: 0,
   },
-  subTitle: {
-    margin: 24,
-    textAlign: "center"
-  }
+  contentArea: {
+    flex: 1,
+    backgroundColor: "#f9f9f9",
+    minWidth: 0,
+    overflow: 'hidden',
+  },
 });
-
-const Home = () => {
-  return (
-    <View style={styles.container}>
-      <Logo />
-      <Text style={styles.title}>MightyByte React Native Challenge.</Text>
-      <Text style={styles.subTitle}>
-        You are allowed to modify this project structure in any way you wish.
-      </Text>
-    </View>
-  );
-};
 
 export default Home;
